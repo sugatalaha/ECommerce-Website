@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { CartTotal } from "../Components/CartTotal";
+import { useContext } from "react";
+import { ShopContext } from "../Context/ShopContext";
+import axios from "axios";
+import backendUrl from "../constant";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export const Order = () => {
+    const {cartItems,user,getCartAmount,getCartData,getItemName}=useContext(ShopContext);
+    const navigate=useNavigate();
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -11,16 +19,73 @@ export const Order = () => {
         country: "",
         zip: "",
         phone: "",
-        paymentMethod: "stripe",
+        paymentMethod: "COD",
     });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Order Details:", formData);
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            console.log("Order Details:", formData);
+            const ItemClone=structuredClone(cartItems);
+            for(const itemId in ItemClone)
+            {
+                const itemName=getItemName(itemId);
+                console.log(itemName);
+                if(itemName)
+                {
+                    ItemClone[itemId].itemName=itemName;
+                }
+            }
+            const data={
+                userId:user._id,
+                address:
+                {
+                    firstName:formData.firstName,
+                    lastName:formData.lastName,
+                    email:formData.email,
+                    city:formData.city,
+                    country:formData.country,
+                    zip:formData.zip,
+                    phone:formData.phone,
+                },
+                paymentMethod:formData.paymentMethod,
+                amount:getCartAmount(),
+                items:ItemClone
+            };
+            console.log("Data prepared:",data);
+            switch(formData.paymentMethod)
+            {
+                case "COD":
+                    let response=await axios.post(`${backendUrl}/order/place`,data,{withCredentials:true});
+                    if(response.data.success){
+                        toast.success(response.data.message);
+                        getCartData();
+                        navigate("/");
+                    } 
+                case "razorpay":
+                    response=await axios.post(`${backendUrl}/order/razorpay`,data,{withCredentials:true});
+                    if(response.data.success){
+                        toast.success(response.data.message);
+                        getCartData();
+                        navigate("/");
+                    } 
+                case "stripe":
+                    response=await axios.post(`${backendUrl}/order/stripe`,data,{withCredentials:true});
+                    if(response.data.success){
+                        toast.success(response.data.message);
+                        getCartData();
+                        navigate("/");
+                    } 
+            }
+            
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        }
     };
 
     return (
@@ -137,8 +202,8 @@ export const Order = () => {
                                 <input 
                                     type="radio" 
                                     name="paymentMethod" 
-                                    value="cod" 
-                                    checked={formData.paymentMethod === "cod"} 
+                                    value="COD" 
+                                    checked={formData.paymentMethod === "COD"} 
                                     onChange={handleChange}
                                 />
                                 Cash on Delivery
@@ -147,8 +212,8 @@ export const Order = () => {
                     </div>
 
                     {/* Submit Button */}
-                    <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                        Place Order
+                    <button type="submit" className="w-full bg-black text-white py-2 rounded hover:bg-slate-700 transition">
+                        PLACE ORDER
                     </button>
                 </form>
 

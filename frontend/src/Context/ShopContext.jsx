@@ -60,18 +60,10 @@ const ShopContextProvider=(props)=>
     
     const fetchUser = async () => {
       try {
-        console.log("Fetch user localstorage:",localStorage.getItem("user"));
-        if(localStorage.getItem("user")!=="null" && localStorage.getItem("user")!=="undefined" && localStorage.getItem("user")!==null && localStorage.getItem("user")!==undefined)
-        {
-          console.log("In if block,",localStorage.getItem("user"))
-        }
-        else
-        {
-          setLoading(true);
-          const response = await axios.get(`${backendUrl}/users/user-check-auth`, { withCredentials: true });
-          console.log("Fetch user:",response.data.user);
-          localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in local storage
-        }
+        setLoading(true);
+        const response = await axios.get(`${backendUrl}/users/user-check-auth`, { withCredentials: true });
+        console.log("Fetch user:",response.data.user);
+        localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in local storag
         setUser(JSON.parse(localStorage.getItem("user")));
         // console.log(localStorage.getItem("user"));
       } catch (error) {
@@ -145,6 +137,11 @@ const ShopContextProvider=(props)=>
         toast.error(error.response.data.message);
       }
     }
+    const getItemName=(itemId)=>
+    {
+      const filteredArray= products.find((product)=>product._id===itemId);
+      return filteredArray.name;
+    }
 
     const getCartAmount= ()=>
     {
@@ -156,7 +153,7 @@ const ShopContextProvider=(props)=>
         {
           if(cartItems[item][size]>0)
           {
-            total+=cartItems[item][size]*productInfo.price;
+            total+=cartItems[item][size]*productInfo?.price;
           }
         }
       }
@@ -188,7 +185,7 @@ const ShopContextProvider=(props)=>
       removeCartItem,getCartAmount,navigate,
       fetchData,fetchUser,loading,
       getCartData,user,setUser,setLoading,
-      sortedProducts
+      sortedProducts,getItemName
    };
     return (
         <ShopContext.Provider value={value}>
