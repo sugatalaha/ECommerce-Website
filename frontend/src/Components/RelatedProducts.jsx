@@ -14,7 +14,6 @@ const RelatedProducts = ({ category, subCategory,productId }) => {
             setRelated(productsCopy.slice(0, 5));
         }
     }, [products, category, subCategory]);
-    console.log("Related products:",related);
     return (
         <div className="mt-8">
             {related.length > 0 ? (

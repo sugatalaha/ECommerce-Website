@@ -12,6 +12,7 @@ import {Toaster} from "react-hot-toast";
 import { Signup } from './Pages/Signup.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { ShopContext } from './Context/ShopContext.jsx'
+import { MyOrders } from './Pages/MyOrders.jsx'
 
 function App() {
   const {user,fetchUser,loading}=useContext(ShopContext);
@@ -30,6 +31,7 @@ function App() {
         <Route path='/product/:productId' element={<Product/>}/>
         <Route path='/content' element={<Content/>}/>
         <Route path="/signup" element={<Signup/>}/>
+        <Route path='/my-orders' element={user?<MyOrders/>:<Navigate to="/login"/>}/>
       </Routes>
       <Toaster/>
     </>

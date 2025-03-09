@@ -20,7 +20,7 @@ export const Product = () => {
         }
     }, [productData,products]);
 
-    const sizes = ["S", "M", "XL"];
+    const sizes = productData?.sizes;
 
     return productData ? (
         <>

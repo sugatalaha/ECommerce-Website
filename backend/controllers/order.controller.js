@@ -8,6 +8,7 @@ const payOnCash=async (req,res)=>
         const {items,address,amount,paymentMethod}=req.body;
         const OrderInstance=new Order(
             {
+                userId:userId,
                 items,
                 address,
                 amount,
@@ -53,7 +54,7 @@ const userOrders=async (req,res)=>
 {
     try {
         const userId=req.user._id;
-        const myOrders=await Order.findOne({userId:userId});
+        const myOrders=await Order.find({userId:userId});
         return res.status(200).json({success:true,message:"User orders retrieved",orders:myOrders});
     } catch (error) {
         console.log("Error in userOrders controller:",error);
@@ -64,7 +65,19 @@ const userOrders=async (req,res)=>
 
 const updateStatus=async (req,res)=>
 {
-
+    try {
+        const {orderId,status}=req.body;
+        if(orderId)
+        {
+            await Order.findByIdAndUpdate(orderId,{
+                status:status
+            })
+            return res.status(200).json({success:true,message:"Status updated"});
+        }
+    } catch (error) {
+        console.log("Error in updateStatus controller:",error);
+        return res.status(500).json({success:false,message:"Internal server error"});
+    }
 }
 
 export {allOrders,userOrders,placeOrderRazorpay,payOnCash,placeOrderStripe,updateStatus};

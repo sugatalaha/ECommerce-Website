@@ -12,7 +12,7 @@ const ShopContextProvider=(props)=>
     const [user,setUser]=useState(()=>JSON.parse(localStorage.getItem("user") || null));
     const [products,setProducts]=useState([]);
     const [loading,setLoading]=useState(false);
-    const [sortedProducts,setSortedProducts]=useState([]);
+    const [orders,setOrders]=useState([]);
     const fetchData=async ()=>
     {
       const response=await axios(`${backendUrl}/products/product-list`);
@@ -22,13 +22,6 @@ const ShopContextProvider=(props)=>
     const [search, setSearch]=useState("");
     const [showSearch,setShowSearch]=useState(true);
     const deliveryFee=10;
-    const sortProducts=()=>
-    {
-      setSortedProducts([...products].sort((a,b)=>
-      {
-        return a.createdAt-b.createdAt;
-      }))
-    }
     const getCartData=async ()=>
     {
         try {
@@ -111,6 +104,19 @@ const ShopContextProvider=(props)=>
       }
     }
 
+    const fetchOrders=async ()=>
+    {
+      try {
+        const response=await axios.get(`${backendUrl}/order/my-orders`,{withCredentials:true});
+        console.log(response.data.orders);
+        if(response.data.success)
+        {
+          setOrders(response.data.orders);
+        }
+      } catch (error) {
+      }
+    }
+
     const updateCartItem=async (itemId,size,quantity)=>
     {
       try {
@@ -173,8 +179,8 @@ const ShopContextProvider=(props)=>
     },[]);
     useEffect(()=>
     {
-      sortProducts();
-    },[products])
+      fetchOrders();
+    },[]);
 
     const navigate=useNavigate();
 
@@ -185,7 +191,7 @@ const ShopContextProvider=(props)=>
       removeCartItem,getCartAmount,navigate,
       fetchData,fetchUser,loading,
       getCartData,user,setUser,setLoading,
-      sortedProducts,getItemName
+      getItemName,orders
    };
     return (
         <ShopContext.Provider value={value}>

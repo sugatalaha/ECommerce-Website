@@ -47,7 +47,7 @@ const addProduct=async (req,res)=>
 const listProducts=async (req,res)=>
     {
         try {
-            const products=await Product.find();
+            const products=await Product.find().sort({ createdAt: -1 });
             return res.status(200).json({message:"All prodcucts fetched",products});
         } catch (error) {
             console.log("Error in listProducts controller:",error);

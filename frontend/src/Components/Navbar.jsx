@@ -77,6 +77,15 @@ export const Navbar = () => {
           >
             Content
           </NavLink>
+          {user?<NavLink to="/my-orders" 
+                        className={({ isActive }) => 
+                          `hover:text-gray-500 transition duration-200 ${
+                            isActive ? "text-black font-semibold underline" : ""
+                          }`
+                        }
+          >
+            Orders
+          </NavLink>:null}
         </div>
 
         {/* Icons Section */}
@@ -129,6 +138,9 @@ export const Navbar = () => {
           <NavLink to="/content" className="block hover:text-gray-500 transition duration-200">
             Content
           </NavLink>
+          {user?<NavLink to="/my-orders" className="block hover:text-gray-500 transition duration-200">
+            Orders
+          </NavLink>:null}
         </div>
       )}
     </nav>
