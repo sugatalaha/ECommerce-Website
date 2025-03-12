@@ -18,7 +18,7 @@ export const Product = () => {
             setProductData(foundProduct);
             setSelectedImage(foundProduct.image[0]);
         }
-    }, [productData,products]);
+    }, [productData,products,productId]);
 
     const sizes = productData?.sizes;
 

@@ -12,11 +12,22 @@ const ShopContextProvider=(props)=>
     const [user,setUser]=useState(()=>JSON.parse(localStorage.getItem("user") || null));
     const [products,setProducts]=useState([]);
     const [loading,setLoading]=useState(false);
+    const [isDataFetching,setIsDataFetching]=useState(false);
     const [orders,setOrders]=useState([]);
     const fetchData=async ()=>
     {
-      const response=await axios(`${backendUrl}/products/product-list`);
-      setProducts(response.data.products);
+      try {
+        setIsDataFetching(true);
+        const response=await axios(`${backendUrl}/products/product-list`);
+        setProducts(response.data.products);
+      } catch (error) {
+        toast.error(error.response.data.message || "An error occured");
+      }
+      finally
+      {
+        setIsDataFetching(false);
+      }
+
     }
     const [cartItems,setCartItems]=useState({});
     const [search, setSearch]=useState("");
@@ -191,7 +202,7 @@ const ShopContextProvider=(props)=>
       removeCartItem,getCartAmount,navigate,
       fetchData,fetchUser,loading,
       getCartData,user,setUser,setLoading,
-      getItemName,orders
+      getItemName,orders,isDataFetching
    };
     return (
         <ShopContext.Provider value={value}>

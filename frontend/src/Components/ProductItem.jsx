@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../Context/ShopContext";
 import { Link } from "react-router-dom";
 
 export const ProductItem = ({ productId, image, name, price }) => {
-    const { currency } = useContext(ShopContext);
+    const { currency, isDataFetching} = useContext(ShopContext);
+    if(isDataFetching)
+    {
+        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    }
 
     return (
         <Link to={`/product/${productId}`}>
@@ -14,7 +18,7 @@ export const ProductItem = ({ productId, image, name, price }) => {
                 <img 
                     src={image[0]} 
                     alt={name} 
-                    className="w-full h-40 object-cover rounded"
+                    className="product-image"
                 />
                 <span className="block text-gray-700 font-medium mt-2">{currency}{price}</span>
                 <h3 className="mt-2 font-semibold text-center">{name}</h3>
