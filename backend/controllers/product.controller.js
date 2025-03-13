@@ -32,7 +32,8 @@ const addProduct=async (req,res)=>
                 sizes:JSON.parse(sizes),
                 description,
                 bestseller:bestseller==="true"?true:false,
-                image:imageUrls
+                image:imageUrls,
+                description
             }
         )
         await product.save();
@@ -81,4 +82,31 @@ const singleProduct=async (req,res)=>
     
 }
 
-export {addProduct,removeProduct,singleProduct,listProducts};
+const addReview=async (req,res)=>
+{
+    try {
+        const {text,productId,username,userRating}=req.body;
+        const product=await Product.findById(productId);
+        if(text!=="" || userRating!==0)
+        {
+            product.reviews.push({text:text,user:username,rating:userRating});
+        }
+        if(userRating!==0)
+        {
+            const {totalRating,countReviewers}=product.rating;
+            let newTotalRating=totalRating+userRating;
+            let newCountReviewers=countReviewers+1;
+            product.rating={totalRating:newTotalRating,countReviewers:newCountReviewers};
+        }
+        await Product.findByIdAndUpdate(productId,{
+            reviews:product.reviews,
+            rating:product.rating
+        });
+        return res.status(200).json({success:true,message:"Review added successfully"});
+    } catch (error) {
+        console.log("Error in addReview controller ",error);
+        return res.status(500).json({message:"Internal server error"});
+    }
+}
+
+export {addProduct,removeProduct,singleProduct,listProducts,addReview};

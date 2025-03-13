@@ -11,6 +11,19 @@ const ProductSchema=new mongoose.Schema(
             type:String,
             required:true
         },
+        rating:
+        {
+            type:Object,
+            default:{
+                totalRating:5,
+                countReviewers:1
+            }
+        },
+        reviews:
+        {
+            type:Array,
+            default:[]
+        },
         type:
         {
             type:String,
@@ -34,6 +47,11 @@ const ProductSchema=new mongoose.Schema(
         price:
         {
             type:Number,
+            required:true
+        },
+        description:
+        {
+            type:String,
             required:true
         }
     },{timestamps:true}

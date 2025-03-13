@@ -61,6 +61,16 @@ const ShopContextProvider=(props)=>
       }
       return sum;
     }
+    const sendReview=async (data)=>
+    {
+      try {
+        const response=await axios.post(`${backendUrl}/products/add-review`,data,{withCredentials:true});
+        console.log(response.data.message);
+        toast.success("Review added");
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
+    }
     
     const fetchUser = async () => {
       try {
@@ -202,7 +212,8 @@ const ShopContextProvider=(props)=>
       removeCartItem,getCartAmount,navigate,
       fetchData,fetchUser,loading,
       getCartData,user,setUser,setLoading,
-      getItemName,orders,isDataFetching
+      getItemName,orders,isDataFetching,
+      sendReview
    };
     return (
         <ShopContext.Provider value={value}>
