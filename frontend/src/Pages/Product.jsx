@@ -67,6 +67,8 @@ export const Product = () => {
                         </div>
                     </div>
                     <p className="text-lg font-semibold text-gray-700">${productData.price}</p>
+                    <h3>Description</h3>
+                    <p className="text-md text-gray-600">{productData.description}</p>
                     <img src={selectedImage} alt="Selected" className="w-full h-96 object-contain border border-gray-300 rounded-lg" />
                     <div className="flex items-center space-x-4">
                         <span className="text-lg font-semibold">Size:</span>

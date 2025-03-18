@@ -6,7 +6,7 @@ import { Title } from "../Components/Title.jsx";
 export const Content = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedTypes, setSelectedTypes] = useState([]);
-  const { products,fetchData } = useContext(ShopContext);
+  const { products,fetchData,isDataFetching } = useContext(ShopContext);
   const [sortType, setSortType] = useState("relevant");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const {search}=useContext(ShopContext);
@@ -57,6 +57,9 @@ export const Content = () => {
       product.name.toLowerCase().includes(search.toLowerCase())
     )))
   },[search,products])
+  if (isDataFetching) {
+      return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    }
 
   return (
     <div className="flex">
