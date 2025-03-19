@@ -8,6 +8,8 @@ import { Title } from "../Components/Title.jsx";
 export const Product = () => {
     const { productId } = useParams();
     const { products, addToCart, user, sendReview } = useContext(ShopContext);
+    const [isProductFetching,setIsProductFetching]=useState(false);
+    const [hasReviewed, setHasReviewed]=useState(false);
     const [productData, setProductData] = useState(null);
     const [selectedImage, setSelectedImage] = useState("");
     const [selectedSize, setSelectedSize] = useState(null);
@@ -17,26 +19,33 @@ export const Product = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        setIsProductFetching(true);
         const foundProduct = products.find(item => item._id === productId);
         if (foundProduct) {
             setProductData(foundProduct);
             setSelectedImage(foundProduct.image[0]);
             setReviews(foundProduct.reviews || []);
+            setHasReviewed(foundProduct?.reviews?.some((review)=>review.userId===user._id));
         }
+        setIsProductFetching(false);
     }, [productId, products]);
-
+    if (isProductFetching) {
+        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+      }
     const addReview = async () => {
         if (!user) {
             navigate("/login");
             return;
         }
         if (newReview.trim() === "" &&  newRating === 0) return;
-        const review = { username: user.name, text: newReview, productId: productId, userRating: newRating };
+        const review = { username: user.name, text: newReview, productId: productId, userRating: newRating,userId:user._id };
         await sendReview(review);
-        setReviews([...reviews, { user: user.name, text: newReview, rating: newRating }]);
+        setReviews([...reviews, { user: user.name, text: newReview, rating: newRating,userId:user._id }]);
         setNewReview("");
+        setHasReviewed(true);
         setNewRating(0);
     };
+    // console.log(reviews[0]?.userId,user._id);
 
     return productData ? (
         <>
@@ -116,14 +125,14 @@ export const Product = () => {
                     <p className="text-gray-600">No reviews yet.</p>
                 )}
                 <div className="mt-6">
-                    <h3 className="text-xl font-semibold mb-2">Add a Review</h3>
-                    <textarea 
+                    <h3 className="text-xl font-semibold mb-2">{hasReviewed?"You have already reviewed the product":"Add a Review"}</h3>
+                    {hasReviewed?null:<textarea 
                         className="w-full p-2 border rounded-md" 
                         placeholder="Write your review..." 
                         value={newReview} 
                         onChange={(e) => setNewReview(e.target.value)}
-                    />
-                    <div className="flex items-center space-x-2 mt-2">
+                    />}
+                    {hasReviewed?null:<div className="flex items-center space-x-2 mt-2">
                         <span className="text-lg">Your Rating:</span>
                         {Array.from({ length: 5 }).map((_, i) => (
                             <FaStar 
@@ -132,13 +141,13 @@ export const Product = () => {
                                 onClick={() => setNewRating(i + 1)}
                             />
                         ))}
-                    </div>
-                    <button 
+                    </div>}
+                    {hasReviewed?null:<button 
                         className="mt-4 px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-gray-700 transition" 
                         onClick={addReview}
                     >
                         Submit Review
-                    </button>
+                    </button>}
                 </div>
             </div>
             <Title text1={"RELATED"} text2={"PRODUCTS"}/>

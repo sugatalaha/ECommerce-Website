@@ -85,11 +85,11 @@ const singleProduct=async (req,res)=>
 const addReview=async (req,res)=>
 {
     try {
-        const {text,productId,username,userRating}=req.body;
+        const {text,productId,username,userRating,userId}=req.body;
         const product=await Product.findById(productId);
         if(text!=="" || userRating!==0)
         {
-            product.reviews.push({text:text,user:username,rating:userRating});
+            product.reviews.push({text:text,user:username,rating:userRating,userId:userId});
         }
         if(userRating!==0)
         {
